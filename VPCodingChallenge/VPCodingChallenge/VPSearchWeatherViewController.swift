@@ -116,7 +116,6 @@ class VPSearchWeatherViewController: UITableViewController {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         let communicationManager = CommunicationManager.sharedInstance
         communicationManager.addRemoteOperation(VPGetWeatherReportRequest.createReqestToGetWeatherReportForCity(cityName: cityName)!) { (data, error) in
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
             if error == nil {
                 // Parse the data 
                 // Ideally parseData should take one more arguments as a clousure(Completion Handler)
@@ -124,12 +123,14 @@ class VPSearchWeatherViewController: UITableViewController {
                 self.weatherDetails = VPGetWetherReportResponse.parseData(data: data!) as WeatherDetails
                 if (self.weatherDetails?.status == 200) {
                     DispatchQueue.main.async {
+                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         self.tableView.reloadData()
                     }
                 }
                 else {
                     // If city not found then dispay alert, City not found.
                     DispatchQueue.main.async {
+                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         let alert = UIAlertController(title: "Alert", message:self.weatherDetails?.errorMessage , preferredStyle: UIAlertControllerStyle.alert)
                         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
